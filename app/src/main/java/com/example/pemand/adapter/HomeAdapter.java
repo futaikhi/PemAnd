@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +14,8 @@ import com.example.pemand.R;
 import com.example.pemand.model.Data;
 
 import java.util.ArrayList;
+
+import com.squareup.picasso.Picasso;
 
 public class HomeAdapter extends BaseAdapter {
     ArrayList<Data> data;
@@ -39,8 +42,11 @@ public class HomeAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
+
     public class Holder{
-        TextView os_text;
+        TextView title;
+        TextView subtitle;
+        ImageView image;
     }
 
 
@@ -51,9 +57,13 @@ public class HomeAdapter extends BaseAdapter {
         final View rowView;
 
         rowView = inflater.inflate(R.layout.adapter_home, null);
-        holder.os_text = (TextView) rowView.findViewById(R.id.dataHome);
+        holder.title = (TextView) rowView.findViewById(R.id.title);
+        holder.subtitle = (TextView) rowView.findViewById(R.id.subtitle);
+        holder.image = (ImageView) rowView.findViewById(R.id.icon);
 
-        holder.os_text.setText(data.get(position).getNama());
+        holder.title.setText(data.get(position).getNama());
+        holder.subtitle.setText(String.valueOf(data.get(position).getNilai()));
+        Picasso.get().load(data.get(position).getGambar()).into(holder.image);
 
         return rowView;
     }

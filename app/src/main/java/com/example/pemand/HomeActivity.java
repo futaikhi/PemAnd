@@ -1,9 +1,11 @@
 package com.example.pemand;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.pemand.adapter.HomeAdapter;
@@ -24,7 +26,12 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        init();
+        PrefManager prefManager = PrefManager.getInstance(HomeActivity.this);
+        if(!prefManager.isLoggedIn()){
+            startActivity(new Intent(HomeActivity.this,MainActivity.class));
+        }else {
+            init();
+        }
     }
 
     void init(){
@@ -47,7 +54,7 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             ArrayList<Data> arrData = new ArrayList<>();
-            int[] w = {1,1,5};
+            int[] w = {5,1,2};
             super.onPostExecute(s);
             try {
                 JSONArray jsonArray = new JSONArray(s);
@@ -67,7 +74,7 @@ public class HomeActivity extends AppCompatActivity {
                 for (int i = 0; i < jsonArray.length() ; i++){
                     arrData.add(new Data(topsis.cetak()[i].getNilai(),topsis.cetak()[i].getNama(),topsis.cetak()[i].getGambar()));
                 }
-                GridView gridView = findViewById(R.id.grid);
+                ListView gridView = findViewById(R.id.grid);
                 HomeAdapter homeAdapter = new HomeAdapter(HomeActivity.this,arrData);
                 gridView.setAdapter(homeAdapter);
 

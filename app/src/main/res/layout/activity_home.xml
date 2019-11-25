@@ -12,7 +12,7 @@
         android:textStyle="bold"
         android:text="kajsdhkasjdh"/>
 
-    <GridView
+    <ListView
         android:id="@+id/grid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

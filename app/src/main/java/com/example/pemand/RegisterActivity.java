@@ -1,6 +1,6 @@
 package com.example.pemand;
 
-import com.example.pemand.model.User;
+import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -9,52 +9,37 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.pemand.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 
-public class MainActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
     EditText usernameText,passwordText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        PrefManager prefManager = PrefManager.getInstance(MainActivity.this);
+        setContentView(R.layout.activity_register);
+        PrefManager prefManager = PrefManager.getInstance(RegisterActivity.this);
         if(prefManager.isLoggedIn()){
-            startActivity(new Intent(MainActivity.this,HomeActivity.class));
+            startActivity(new Intent(RegisterActivity.this,HomeActivity.class));
         }else {
-            init();
+            usernameText = findViewById(R.id.username);
+            passwordText = findViewById(R.id.password);
         }
     }
 
-    void init(){
-        usernameText = findViewById(R.id.username);
-        passwordText = findViewById(R.id.password);
-        //if user presses on login calling the method login
-        findViewById(R.id.btnLogin).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                userLogin();
-            }
-        });
-        //if user presses on not registered
-        findViewById(R.id.btnRegister).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //open register screen
-                startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
-                finish();
-            }
-        });
+
+    public void signUp(View view) {
+        userRegister();
     }
 
-    private void userLogin() {
-        //first getting the values
+    public void userRegister(){
         final String username = this.usernameText.getText().toString();
         final String password = this.passwordText.getText().toString();
         //validating inputs
@@ -68,15 +53,23 @@ public class MainActivity extends AppCompatActivity {
             this.passwordText.requestFocus();
             return;
         }
-        //if everything is fine
-        UserLogin ul = new UserLogin(username,password);
-        ul.execute();
+        UserRegister userRegister = new UserRegister(username,password);
+        userRegister.execute();
+
     }
-    class UserLogin extends AsyncTask<Void , Void , String>{
+
+    public void signIn(View view) {
+        Intent intent = new Intent(RegisterActivity.this,MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    class UserRegister extends AsyncTask<Void, Void, String>{
+
         String username,password;
         String lala;
 
-        UserLogin(String username,String password){
+        UserRegister(String username,String password){
             this.username = username;
             this.password = password;
         }
@@ -88,21 +81,9 @@ public class MainActivity extends AppCompatActivity {
             try {
                 JSONObject jsonObject = new JSONObject(s);
 
-                if (!jsonObject.getBoolean("error")){
+                if (jsonObject.getBoolean("sukses")){
                     Toast.makeText(getApplicationContext(),jsonObject.getString("message"),Toast.LENGTH_SHORT).show();
-                    JSONObject userJson = jsonObject.getJSONObject("user");
-
-                    //creating a new user object
-                    User user = new User(
-                            userJson.getInt("id"),
-                            userJson.getString("username")
-                    );
-
-                    //storing the user in shared preferences
-                    PrefManager.getInstance(getApplicationContext()).setUserLogin(user);
-
-
-                    startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
                 }else {
                     Toast.makeText(getApplicationContext(),jsonObject.getString("message"),Toast.LENGTH_SHORT).show();
@@ -121,13 +102,9 @@ public class MainActivity extends AppCompatActivity {
             params.put("username",this.username);
             params.put("password",this.password);
 
-            lala = requestHandler.sendPostRequest(URLS.url_login, params);
+            lala = requestHandler.sendPostRequest(URLS.url_register, params);
 
             return lala;
         }
-
     }
-
 }
-
-
